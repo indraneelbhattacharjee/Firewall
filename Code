@@ -1,0 +1,31 @@
+from netmiko import ConnectHandler
+
+# Define the device parameters
+device = {
+    'device_type': 'cisco_ios',
+    'ip': '192.168.1.1',
+    'username': 'admin',
+    'password': 'password',
+    'secret': 'enable_password'
+}
+
+# Establish an SSH connection to the device
+net_connect = ConnectHandler(**device)
+net_connect.enable()
+
+# Configure a basic firewall policy
+config_commands = [
+    'ip access-list extended firewall',
+    'permit ip any any log',
+    'exit',
+    'interface gigabitethernet0/0',
+    'ip access-group firewall in',
+    'exit'
+]
+output = net_connect.send_config_set(config_commands)
+
+# Display the output of the configuration commands
+print(output)
+
+# Disconnect from the device
+net_connect.disconnect()
